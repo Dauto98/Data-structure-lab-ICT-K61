@@ -1,6 +1,5 @@
 #include <stddef.h>
 #include <string.h>
-#include <stdio.h>
 #include "../../libfdr/jrb.h"
 #include "./graph-list-str.h"
 

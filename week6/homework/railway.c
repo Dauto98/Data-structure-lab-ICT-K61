@@ -7,7 +7,6 @@
 int readData(FILE* fin, Graph stationNameMapping, Graph networkTree) {
 	int section = -1;
 	char line[100];
-	char * a;
 	while (fgets(line, 100, fin) != NULL) {
 		if (strcmp(line, "[STATIONS]\n") == 0) {
 			section = 0;
@@ -26,42 +25,35 @@ int readData(FILE* fin, Graph stationNameMapping, Graph networkTree) {
 				printf("Wrong file format\n");
 				return 1;
 			}
-			jrb_insert_str(stationNameMapping, key, new_jval_s(name));
-			JRB test = jrb_find_str(stationNameMapping, "S1");
-			if (test == NULL) {
-				printf("Not found\n");
-			} else {
-				printf("%s - %s\n", jval_s(test->key), jval_s(test->val));
-			}
+			// copy to malloc pointer so that the string won't get deleted when go out of scope
+			char* copiedKey = malloc(sizeof(char) * strlen(key));
+			char* copiedName = malloc(sizeof(char) * strlen(name));
+			strcpy(copiedKey, key);
+			strcpy(copiedName, name);
+			jrb_insert_str(stationNameMapping, copiedKey, new_jval_s(copiedName));
 		} else if (section == 1) {
 			// read network
 			// discard the railway name (M1, M2, ....)
 			line[strlen(line) - 1] = '\0';
 			strtok(line, "=");
-			char* prevStation = malloc(sizeof(char) * 100);
-			char* nextStation = malloc(sizeof(char) * 100);
+			char* prevStation = NULL;
+			char* nextStation = NULL;
 			while ((nextStation = strtok(NULL, " ")) != NULL) {
 				if (prevStation != NULL) { // not the first station
-					printf("%s\n", nextStation);
-					JRB test = jrb_find_str(stationNameMapping, nextStation);
-					if (test == NULL) {
-						printf("Not found\n");
-					} else {
-						printf("%s - %s\n", jval_s(test->key), jval_s(test->val));
-					}
-					addEdge(networkTree, prevStation, nextStation);
+					// copy to malloc pointer so that the string won't get deleted when go out of scope
+					char* copiedPrev = malloc(sizeof(char) * strlen(prevStation));
+					char* copiedNext = malloc(sizeof(char) * strlen(nextStation));
+					strcpy(copiedPrev, prevStation);
+					strcpy(copiedNext, nextStation);
+					addEdge(networkTree, copiedPrev, copiedNext);
 				}
-				strcpy(prevStation, nextStation);
+				prevStation = nextStation;
 			}
 		} else {
 			printf("Wrong file format\n");
 			return 1;
 		}
 	}
-	// JRB map;
-	// jrb_traverse(map, (*stationNameMapping)) {
-	// 	printf("%s\n", jval_s(jrb_val(map)));
-	// }
 	return 0;
 }
 
@@ -81,7 +73,6 @@ char* getNameFromKey(char* key, Graph stationNameMapping) {
 
 void findAdjacentStation(char* name, Graph stationNameMapping, Graph networkTree) {
 	char* key = getKeyFromName(name, stationNameMapping);
-	printf("%s\n", key);
 	if (key == NULL) {
 		printf("There is no station with that name\n");
 		return;
@@ -90,7 +81,7 @@ void findAdjacentStation(char* name, Graph stationNameMapping, Graph networkTree
 	for (int i = 0; i < 100; i++) {
 		keyArray[i] = malloc(sizeof(char) * 100);
 	}
-	int count = getAdjacentVertices(networkTree, name, keyArray);
+	int count = getAdjacentVertices(networkTree, key, keyArray);
 	if (count == 0) {
 		printf("No Adjacent station\n");
 		return;
@@ -119,7 +110,7 @@ int main(int argc, char const *argv[]) {
 
 	int option;
 	while (1) {
-		printf("MENU\n");
+		printf("\nMENU\n");
 		printf("1 - Find adjacent stations\n");
 		printf("2 - Quit\n");
 
