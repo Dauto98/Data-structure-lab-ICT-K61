@@ -1,7 +1,7 @@
 #ifndef _GRAPH_LIST_H_
 #define _GRAPH_LIST_H_
 
-#include "jrb.h"
+#include "../libfdr/jrb.h"
 
 typedef JRB Graph;
 
