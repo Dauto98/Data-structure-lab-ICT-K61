@@ -1,4 +1,5 @@
-#include "stdlib.h"
+#include <stdlib.h>
+#include "../libfdr/dllist.h"
 #include "graph.h"
 
 Graph createGraph(int sizemax) {

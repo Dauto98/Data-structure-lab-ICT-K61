@@ -1,0 +1,16 @@
+[STATIONS]
+S1=Harvey
+S2=Electron
+S3=New York
+S4=Ark
+S5=DownSala
+S6=Clink
+S7=Crazy dog
+S8=Martian
+S9=Dark
+[LINES]
+M1=S1 S2 S4 S3 S7
+M2=S3 S5 S6 S8 S9
+M3=S2 S4 S9 S7 S5
+M4=S3 S1 S6 S7 S4
+M5=S5 S9 S8 S3 S1
